@@ -1,71 +1,13 @@
 #include "WavetableSynth.h"
 
-//const auto pi = M_PI;
-
 void WavetableSynth::setVolume(float volume) {
 	this->volume = volume;
 }
-
-/*
-float renderSawtooth(float* buffer, int numSamples, float frequency, float sampleRate) {
-    double phase = 0;
-    double phaseIncrement = 2 * pi * frequency / sampleRate;
-
-    for (int i = 0; i < numSamples; ++i) {
-        double sample = 0;
-        for (int n = 1; n <= 10; ++n) { // Add 10 harmonics (adjust as needed)
-            double harmonicFrequency = frequency * n;
-            double harmonicPhase = phase * n;
-            double amplitude = 1.0 / n;
-            
-            // Alternate sign for even harmonics
-            if (n % 2 == 0) {
-                sample += amplitude * std::sin(harmonicPhase);
-            } else {
-                sample += amplitude * std::sin(harmonicPhase);
-            }
-        }
-        buffer[i] = static_cast<float>(sample);
-        phase += phaseIncrement;
-    }
-}*/
-
-/*std::vector<float> WavetableSynth::generateSawWaveTable(std::vector<float>& sineWaveTable, double sampleRate) {
-	constexpr auto WAVETABLE_LENGTH = 128;
-
-	std::vector<float> sawWaveTable(WAVETABLE_LENGTH);
-
-	double phase = 0;
-	double phaseIncrement = 2 * pi / sampleRate;
-
-	for (auto i = 0; i < WAVETABLE_LENGTH; ++i) {
-		double sample = 0;
-		for (int n = 1; n <= 10; ++n) { // Add 10 harmonics (adjust as needed)
-			double harmonicFrequency = static_cast<float>(i) * n;
-			double harmonicPhase = phase * n;
-			double amplitude = 1.0 / n;
-
-			// Alternate sign for even harmonics
-			if (n % 2 == 0) {
-				sample += amplitude * std::sin(harmonicPhase);
-			}
-			else {
-				sample += amplitude * std::sin(harmonicPhase);
-			}
-		}
-		sawWaveTable[i] = static_cast<float>(sample);
-		phase += phaseIncrement;
-	}
-
-	return sawWaveTable;
-}*/
 
 std::vector<float> WavetableSynth::generateWaveTable() {
 	constexpr auto WAVETABLE_LENGTH = 128;
 
 	std::vector<float> sineWaveTable(WAVETABLE_LENGTH);
-
-	//std::vector<float> sawWaveTable(WAVETABLE_LENGTH);
 
 	const auto pi = M_PI;
 
@@ -73,10 +15,7 @@ std::vector<float> WavetableSynth::generateWaveTable() {
 		sineWaveTable[i] = std::sinf(2 * pi * static_cast<float>(i) / static_cast<float>(WAVETABLE_LENGTH));
 	}
 
-	//sawWaveTable = generateSawWaveTable(sineWaveTable, sampleRate);
-
 	return sineWaveTable;
-	//return sawWaveTable;
 }
 
 void WavetableSynth::initializeOscillators() {
@@ -154,10 +93,6 @@ void WavetableSynth::render(juce::AudioBuffer<float>& buffer, int startSample, i
 
 		std::copy(firstChannel + startSample, firstChannel + endSample, 
 			channelData + startSample);
-		
-		/*for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-			channelData[sample] *= volume;
-		}*/
 	}
 }
 

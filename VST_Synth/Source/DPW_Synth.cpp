@@ -5,11 +5,8 @@ void DPW_Synth::setVolume(float volume) {
 }
 
 
-void DPW_Synth::initializeOscillators(){//int numSamples) {
+void DPW_Synth::initializeOscillators(){
     constexpr auto OSCILLATORS_COUNT = 128;
-
-    //double phase = 0;
-    //double phaseIncrement = 2 * pi * frequency / sampleRate;
 
     oscillators.clear();
 
@@ -24,7 +21,6 @@ void DPW_Synth::prepareToPlay(double sampleRate) {
 }
 
 void DPW_Synth::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages) {
-    //initializeOscillators(buffer.getNumSamples());
 
     auto currentSample = 0;
 
@@ -34,7 +30,6 @@ void DPW_Synth::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&
 
         //renderSawtooth(buffer);
         renderSawtooth2(buffer, currentSample, midiEventSample);
-        //renderSawtooth3(buffer);
 
         handleMidiEvent(midiEvent);
 
@@ -97,20 +92,16 @@ void DPW_Synth::renderSawtooth(juce::AudioBuffer<float>& buffer) {
 }
 
 void DPW_Synth::renderSawtooth2(juce::AudioBuffer<float>& buffer, int startSample, int endSample) {
-    //double phase = 0;
-    //double phaseIncrement = frequency / sampleRate;
 
     auto* firstChannel = buffer.getWritePointer(0);
 
     for (auto& oscillator : oscillators) {
         if (oscillator.isPlaying()) {
             for (auto sampleNum = startSample; sampleNum < endSample; ++sampleNum) {
-                //phase = sampleNum * phaseIncrement;
 
-                firstChannel[sampleNum] += oscillator.getSample();//fmod(phase, 1) * 2 - 1;
+                firstChannel[sampleNum] += oscillator.getSample();
                 firstChannel[sampleNum] *= pow(volume, 2);
 
-                //phase += phaseIncrement;
             }
         }
     }
@@ -120,52 +111,7 @@ void DPW_Synth::renderSawtooth2(juce::AudioBuffer<float>& buffer, int startSampl
 
         std::copy(firstChannel + startSample, firstChannel + endSample, channelData + startSample);
     }
-    //}
 }
-/*
-void DPW_Synth::renderSawtooth3(juce::AudioBuffer<float>& buffer) {
-    auto counter = 0;
-    auto period = 100;
-    auto numSamples = buffer.getNumSamples();
-    
-        for (int sample = 0; sample < numSamples; ++sample) {
-            auto output = oscillators[sample];
-            output *= pow(volume, 2);
-            *buffer.getWritePointer(0, sample) = output;
-        }
-
-    for (int channel = 1; channel < buffer.getNumChannels(); ++channel)
-    {
-        for (int sample = 0; sample < numSamples; sample++) {
-            *buffer.getWritePointer(channel, sample) = *buffer.getWritePointer(0, sample);
-        }
-    }
-}*/
-
-/*
-float renderSawtooth(float* buffer, int numSamples, float frequency, float sampleRate) {
-    double phase = 0;
-    double phaseIncrement = 2 * pi * frequency / sampleRate;
-
-    for (int i = 0; i < numSamples; ++i) {
-        double sample = 0;
-        for (int n = 1; n <= 10; ++n) { // Add 10 harmonics (adjust as needed)
-            double harmonicFrequency = frequency * n;
-            double harmonicPhase = phase * n;
-            double amplitude = 1.0 / n;
-
-            // Alternate sign for even harmonics
-            if (n % 2 == 0) {
-                sample += amplitude * std::sin(harmonicPhase);
-            } else {
-                sample += amplitude * std::sin(harmonicPhase);
-            }
-        }
-        buffer[i] = static_cast<float>(sample);
-        phase += phaseIncrement;
-    }
-}*/
-
 
 void DPW_Synth::handleMidiEvent(const juce::MidiMessage& midiEvent) {
 
@@ -178,8 +124,6 @@ void DPW_Synth::handleMidiEvent(const juce::MidiMessage& midiEvent) {
     else if (midiEvent.isNoteOff()) {
         const auto oscillatorId = midiEvent.getNoteNumber();
         oscillators[oscillatorId].stop();
-        //const auto frequency = 0.f;
-        //const auto phase = 0.f;
     }
     else if (midiEvent.isAllNotesOff()) {
         for (auto& oscillator : oscillators) {

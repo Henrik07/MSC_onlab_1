@@ -25,9 +25,9 @@ public:
 
 	void renderSawtooth2(juce::AudioBuffer<float>& buffer, int startSample, int endSample);
 
-	void renderSawtooth3(juce::AudioBuffer<float>& buffer);
-
 private:
+	std::vector<DPW_Osc> oscillators;
+
 	double sampleRate;
 
 	float frequency = 0.f;
@@ -42,8 +42,6 @@ private:
 
 	float midiNoteNumberToFrequency(int midiNoteNumber);
 
-	void initializeOscillators();//int numSamples);
-
-	std::vector<DPW_Osc> oscillators;
+	void initializeOscillators();
 };
 

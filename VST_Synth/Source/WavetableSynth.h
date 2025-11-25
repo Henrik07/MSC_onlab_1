@@ -22,7 +22,6 @@ public:
 private:
 	std::vector<WavetableOsc> oscillators;
 	std::vector<float> generateWaveTable();
-	//std::vector<float> generateSawWaveTable(std::vector<float>& buffer, double sampleRate);
 
 	double sampleRate;
 
