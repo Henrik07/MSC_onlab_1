@@ -4,10 +4,11 @@ void DPW_Synth::setVolume(float volume) {
     this->volume = volume;
 }
 
+void DPW_Synth::setDPW(bool dpw) {
+    this->dpw = dpw;
+}
 
 void DPW_Synth::initializeOscillators(){
-    constexpr auto OSCILLATORS_COUNT = 128;
-
     oscillators.clear();
 
     for (auto i = 0; i < OSCILLATORS_COUNT; ++i) {
@@ -93,6 +94,8 @@ void DPW_Synth::renderSawtooth(juce::AudioBuffer<float>& buffer) {
 
 void DPW_Synth::renderSawtooth2(juce::AudioBuffer<float>& buffer, int startSample, int endSample) {
 
+    auto scaling_factor = sampleRate / (4 * frequency);
+
     auto* firstChannel = buffer.getWritePointer(0);
 
     for (auto& oscillator : oscillators) {
@@ -100,16 +103,84 @@ void DPW_Synth::renderSawtooth2(juce::AudioBuffer<float>& buffer, int startSampl
             for (auto sampleNum = startSample; sampleNum < endSample; ++sampleNum) {
 
                 firstChannel[sampleNum] += oscillator.getSample();
-                firstChannel[sampleNum] *= pow(volume, 2);
 
+                if (dpw) {
+                    firstChannel[sampleNum] *= firstChannel[sampleNum]; //raising each sample to the power of 2
+
+                    ////////////////////////// MATLAB filter
+                    float tmp = firstChannel[sampleNum];
+                    auto filterOut = b0 * firstChannel[sampleNum] + b1 * uBuffer[0][0] - a1 * yBuffer[0][0];
+                    firstChannel[sampleNum] = b0 * firstChannel[sampleNum] + b1 * uBuffer[0][0] - a1 * yBuffer[0][0];
+                    //if (filterOut > 1) { firstChannel[sampleNum] = 1; }
+                    //else { firstChannel[sampleNum] = filterOut; }
+
+                    yBuffer[0][0] = firstChannel[sampleNum];
+                    uBuffer[0][0] = tmp;
+                    //////////////////////////
+
+                    if (firstChannel[sampleNum] * scaling_factor > 1) {
+                        firstChannel[sampleNum] = 1;
+                    }
+                    else {
+                        firstChannel[sampleNum] *= scaling_factor;
+                    }
+                }
+
+                firstChannel[sampleNum] *= pow(volume, 2);
             }
+            /*for (auto sampleNum = startSample; sampleNum < endSample; ++sampleNum) {
+                if (dpw) {
+                    firstChannel[sampleNum] *= firstChannel[sampleNum]; //raising each sample to the power of 2
+
+                    ////////////////////////// MATLAB filter
+                    float tmp = firstChannel[sampleNum];
+                    auto filterOut = b0 * firstChannel[sampleNum] + b1 * uBuffer[0][0] - a1 * yBuffer[0][0];
+                    //firstChannel[sampleNum] = b0 * firstChannel[sampleNum] + b1 * uBuffer[0][0] - a1 * yBuffer[0][0];
+                    if (filterOut > 1) { firstChannel[sampleNum] = 1; }
+                    else { firstChannel[sampleNum] = filterOut; }
+
+                    yBuffer[0][0] = firstChannel[sampleNum];
+                    uBuffer[0][0] = tmp;
+                    //////////////////////////
+
+                    if (firstChannel[sampleNum] * scaling_factor > 1) {
+                        firstChannel[sampleNum] = 1;
+                    }
+                    else {
+                        firstChannel[sampleNum] *= scaling_factor;
+                    }
+                }
+                firstChannel[sampleNum] *= pow(volume, 2);
+            }*/
         }
     }
+
+    //auto scaling_factor = sampleRate / (4 * frequency);
 
     for (auto channel = 1; channel < buffer.getNumChannels(); ++channel) {
         auto* channelData = buffer.getWritePointer(channel);
 
         std::copy(firstChannel + startSample, firstChannel + endSample, channelData + startSample);
+
+        /*if (dpw) {
+            for (auto sampleNum = startSample; sampleNum < endSample; ++sampleNum) {
+                channelData[sampleNum] *= channelData[sampleNum]; //raising each sample to the power of 2
+
+                ////////////////////////// MATLAB filter
+                float tmp = channelData[sampleNum];
+                channelData[sampleNum] = a1 * yBuffer[channel][0] + b0 * channelData[sampleNum] + b1 * uBuffer[channel][0];
+
+                yBuffer[channel][0] = channelData[sampleNum];
+                uBuffer[channel][0] = tmp;
+                //////////////////////////
+
+                channelData[sampleNum] *= scaling_factor;
+            }
+
+            //for (auto sampleNum = startSample; sampleNum < endSample; ++sampleNum) {
+            //    channelData[sampleNum] *= scaling_factor;
+            //}
+        }*/
     }
 }
 

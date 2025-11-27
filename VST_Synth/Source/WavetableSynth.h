@@ -6,10 +6,10 @@
 #include <stdio.h>
 #include "WavetableOsc.h"
 
-constexpr float b0 = 1.0f;
-constexpr float b1 = -1.f;
+//constexpr float b0 = 1.0f;
+//constexpr float b1 = -1.f;
 
-constexpr float a1 = 1.0f;
+//constexpr float a1 = 1.0f;
 
 class WavetableSynth {
 public:

@@ -26,9 +26,15 @@ NewProjectAudioProcessor::NewProjectAudioProcessor()
 vts(*this, nullptr, juce::Identifier("Midi_Plugin"),
     { std::make_unique < juce::AudioParameterFloat>
     ("volume", "Volume",
-        juce::NormalisableRange{0.f, 1.f, 0.1f, 1.f, false}, 1.f) })
+        juce::NormalisableRange{0.f, 1.f, 0.1f, 1.f, false}, 1.f),
 
-    { volumeParam = vts.getRawParameterValue("volume"); }
+    std::make_unique<juce::AudioParameterBool>("dpw", "DPW", false)
+    }) {
+    
+    volumeParam = vts.getRawParameterValue("volume");
+
+    dpwParam = vts.getRawParameterValue("dpw"); 
+}
 
 NewProjectAudioProcessor::~NewProjectAudioProcessor()
 {
@@ -154,7 +160,11 @@ void NewProjectAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
 
     //wavetable_synth.processBlock(buffer, midiMessages);
 
+    const auto dpw = *dpwParam < 0.5f ? false : true;
+
     dpw_synth.setVolume(volume);
+
+    dpw_synth.setDPW(dpw);
 
     dpw_synth.processBlock(buffer, midiMessages);
 

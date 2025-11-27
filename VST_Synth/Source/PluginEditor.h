@@ -34,5 +34,10 @@ private:
         volumeAttachment;
     juce::Label volumeLabel;
 
+    juce::ToggleButton dpwButton;
+    std::unique_ptr < juce::AudioProcessorValueTreeState::ButtonAttachment>
+        dpwAttachment;
+    juce::Label dpwButtonLabel;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NewProjectAudioProcessorEditor)
 };

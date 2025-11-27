@@ -6,15 +6,19 @@
 #include <stdio.h>
 #include "DPW_Osc.h"
 
-//constexpr float b0 = 1.0f;
-//constexpr float b1 = -1.f;
+constexpr auto b0 = 1.0f;
+constexpr auto b1 = -1.f;
 
-//constexpr float a1 = 1.0f;
+constexpr auto a1 = 1.0f;
 
-constexpr auto pi = M_PI;
+//constexpr auto pi = M_PI;
+
+constexpr auto OSCILLATORS_COUNT = 128;
 
 class DPW_Synth{
 public:
+	void setDPW(bool dpw);
+
 	void setVolume(float volume);
 
 	void prepareToPlay(double sampleRate);
@@ -28,15 +32,16 @@ public:
 private:
 	std::vector<DPW_Osc> oscillators;
 
+	bool dpw;
+
+	std::vector <std::array<float, 2>> uBuffer;
+	std::vector <std::array<float, 2>> yBuffer;
+
 	double sampleRate;
 
 	float frequency = 0.f;
 
 	float volume;
-
-	int counter;
-
-	int period;
 
 	void handleMidiEvent(const juce::MidiMessage& midiEvent);
 

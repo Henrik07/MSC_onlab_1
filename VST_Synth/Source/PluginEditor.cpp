@@ -21,6 +21,13 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor (NewProjectAudioP
     addAndMakeVisible(volumeLabel);
     volumeLabel.setText("Volume", juce::dontSendNotification);
 
+    addAndMakeVisible(dpwButton);
+    dpwAttachment.reset(new juce::AudioProcessorValueTreeState::ButtonAttachment(
+        vts, "dpw", dpwButton));
+
+    addAndMakeVisible(dpwButtonLabel);
+    dpwButtonLabel.setText("DPW", juce::dontSendNotification);
+
     setSize (400, 300);
 }
 
@@ -47,4 +54,12 @@ void NewProjectAudioProcessorEditor::resized()
     volumeLabel.setBounds(volumeSlider.getWidth() / 2,
         volumeSlider.getY() - 30,
         300, 50);
+
+    dpwButton.setBounds(volumeSlider.getX(),
+        volumeSlider.getY() + volumeSlider.getHeight() + 10,
+        30, 50);
+
+    dpwButtonLabel.setBounds(volumeSlider.getX() + dpwButton.getWidth(),
+        dpwButton.getY(),
+        100, 50);
 }

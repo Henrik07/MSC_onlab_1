@@ -1,10 +1,13 @@
 #include "DPW_Osc.h"
-#include <cmath>
 
 DPW_Osc::DPW_Osc(double sampleRate) : sampleRate{ sampleRate } {}
 
+void DPW_Osc::setDPW(bool dpw) {
+	this->dpw = dpw;
+}
+
 void DPW_Osc::setFrequency(float frequency) {
-	phaseIncrement = frequency / static_cast<float>(sampleRate);
+	phaseIncrement = 2 * frequency / static_cast<float>(sampleRate);
 }
 
 float DPW_Osc::getSample() {

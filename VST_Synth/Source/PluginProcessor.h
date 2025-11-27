@@ -63,10 +63,10 @@ public:
 
 private:
     juce::AudioProcessorValueTreeState vts;
-    //std::vector<std::array<float, 2>> uBuffer;
-    //std::vector<std::array<float, 2>> yBuffer;
 
     std::atomic<float>* volumeParam = nullptr;
+    std::atomic<float>* dpwParam = nullptr;
+
     WavetableSynth wavetable_synth;
     DPW_Synth dpw_synth;
 
